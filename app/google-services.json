@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "149800780899",
+    "firebase_url": "https://speakerfeedback.firebaseio.com",
+    "project_id": "speakerfeedback",
+    "storage_bucket": "speakerfeedback.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:149800780899:android:793a5f75d6943c13",
+        "android_client_info": {
+          "package_name": "edu.upc.citm.android.speakerfeedback"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "149800780899-5i49qvp48tf1etlpf2piq92lgegkpd05.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.upc.citm.android.speakerfeedback",
+            "certificate_hash": "1c14fda044fadec55a83bd104b540d5a4e61af39"
+          }
+        },
+        {
+          "client_id": "149800780899-c3i5015qiv9q9md7mp48d66es2u6nhv8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.upc.citm.android.speakerfeedback",
+            "certificate_hash": "1c2f9aa8475a9111c017d9960cee4149329c4d54"
+          }
+        },
+        {
+          "client_id": "149800780899-ofg5r0ek0esof7n8osu22brdohupfcc0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAs8CnAmXv5y8NTpgnrdiX6OBN59nHvgHw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "149800780899-ofg5r0ek0esof7n8osu22brdohupfcc0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
