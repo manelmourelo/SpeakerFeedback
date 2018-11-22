@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REGISTER_USER = 0;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private TextView textview;
+    private TextView userNameView;
     private String userId;
 
     ListenerRegistration roomRegistration;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         textview = findViewById(R.id.textview);
+        userNameView = findViewById(R.id.UserNameView);
 
         // Busquem a les preferències de l'app l'ID de l'usuari per saber si ja s'havia registrat
       //  SharedPreferences prefs = getSharedPreferences("config", MODE_PRIVATE);
@@ -84,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 prefs.edit()
                         .putString("userId", userId)
                         .commit();
+                userNameView.setText(userId);
                 Log.i("SpeakerFeedback", "New user: userId = " + userId);
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -152,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Ja està registrat, mostrem el id al Log
             Log.i("SpeakerFeedback", "userId = " + userId);
+            userNameView.setText(userId);
         }
     }
 
