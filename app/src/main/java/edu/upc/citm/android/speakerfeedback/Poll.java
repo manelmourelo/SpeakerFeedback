@@ -10,6 +10,7 @@ public class Poll {
     private boolean open;
     private Date start, end;
     private List<Integer> results;
+    private String id;
 
     Poll() {}
 
@@ -98,5 +99,13 @@ public class Poll {
         for (int i = 0; i < options.size(); i++) {
             results.add(0);
         }
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 }

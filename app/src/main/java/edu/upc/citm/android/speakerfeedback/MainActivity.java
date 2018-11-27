@@ -1,5 +1,8 @@
 package edu.upc.citm.android.speakerfeedback;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -111,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
             polls = new ArrayList<>();
             for (DocumentSnapshot doc : documentSnapshots){
                 Poll poll = doc.toObject(Poll.class);
+                poll.setId(doc.getId());
                 polls.add(poll);
             }
             Log.i("SpeakerFeedback", String.format("He carregat %d polls.", polls.size()));
@@ -168,6 +172,39 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    public void onPollClicked(int pos){
+
+        Poll poll = polls.get(pos);
+
+        if(!poll.isOpen()){
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(poll.getQuestion());
+        String[] options = new String[poll.getOptions().size()];
+
+        for(int i = 0; i < poll.getOptions().size(); i++){
+            options[i] = poll.getOptions().get(i);
+        }
+
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Map<String, Object> map = new HashMap<String, Object>();
+
+                map.put("pollid", polls.get(0).getId());
+                map.put("option", which);
+
+                db.collection("rooms").document("testroom").collection("votes").document(userId).set(map);
+
+            }
+        });
+
+        builder.create().show();
+
     }
 
     class ViewHolder extends  RecyclerView.ViewHolder{
@@ -239,6 +276,9 @@ public class MainActivity extends AppCompatActivity {
         public int getItemCount() {
             return polls.size();
         }
+
+
+
     }
 
 }
