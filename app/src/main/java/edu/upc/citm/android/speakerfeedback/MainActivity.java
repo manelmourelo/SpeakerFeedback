@@ -12,6 +12,8 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -96,11 +98,14 @@ public class MainActivity extends AppCompatActivity {
             users_conected.setText(String.format("Num. Users : %d", documentSnapshots.size()));
             //String nomUsuari = Integer.toString(documentSnapshots.size());
             // Això és per pillar tots els noms que hi ha a la base de dades dins de room
-            //for (DocumentSnapshot doc : documentSnapshots)
-            //{
-            //    nomUsuari += doc.getString("name") + "\n";
-            //}
+           // for (DocumentSnapshot doc : documentSnapshots)
+           // {
+            //   nomUsuari += doc.getString("name") + "\n";
+           // }
             //users_conected.setText(nomUsuari);
+
+
+
         }
     };
 
@@ -162,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
                         .putString("userId", userId)
                         .commit();
                 Log.i("SpeakerFeedback", "New user: userId = " + userId);
+                enterRoom();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -172,6 +178,13 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void enterRoom() {
+        db.collection("users").document(userId)
+                .update(
+                        "room", "testroom"
+                );
     }
 
     public void onPollClicked(int pos){
@@ -205,6 +218,23 @@ public class MainActivity extends AppCompatActivity {
 
         builder.create().show();
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.users_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.go_to_users:
+                Intent intent = new Intent(this, UsersListActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     class ViewHolder extends  RecyclerView.ViewHolder{
