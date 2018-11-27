@@ -176,17 +176,23 @@ public class MainActivity extends AppCompatActivity {
         private TextView questions_view;
         private TextView options_view;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             super(itemView);
             card_view = itemView.findViewById(R.id.card_view);
             label_view = itemView.findViewById(R.id.label_view);
             questions_view = itemView.findViewById(R.id.questions_view);
             options_view = itemView.findViewById(R.id.options_view);
+            card_view.setOnClickListener(new View.OnClickListener(){
+                public void onClick(View v){
+                    int pos = getAdapterPosition();
+                    onPollClicked(pos);
+                }
+            });
         }
     }
 
-    class Adapter extends  RecyclerView.Adapter<ViewHolder>{
 
+    class Adapter extends  RecyclerView.Adapter<ViewHolder>{
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
