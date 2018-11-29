@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         polls_view.setLayoutManager(new LinearLayoutManager(this));
         polls_view.setAdapter(adapter);
 
+        startFireStoreListenerService();
+
         // Busquem a les preferències de l'app l'ID de l'usuari per saber si ja s'havia registrat
         SharedPreferences prefs = getSharedPreferences("config", MODE_PRIVATE);
         userId = prefs.getString("userId", null);
@@ -72,6 +74,19 @@ public class MainActivity extends AppCompatActivity {
             // Ja està registrat, mostrem el id al Log
             Log.i("SpeakerFeedback", "userId = " + userId);
         }
+
+    }
+
+    private void startFireStoreListenerService(){
+        Intent intent = new Intent(this,FireStoreListenerService.class);
+        intent.putExtra("room","testroom");
+        startService(intent);
+    }
+
+    private void stopFireStoreListenerService(){
+        Intent intent = new Intent(this,FireStoreListenerService.class);
+        stopService(intent);
+
     }
 
     private EventListener<DocumentSnapshot> roomListener = new EventListener<DocumentSnapshot>() {
