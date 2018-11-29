@@ -2,8 +2,11 @@ package edu.upc.citm.android.speakerfeedback;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -20,15 +23,20 @@ public class FireStoreListenerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
       Log.i("SpeakerFeecback", "FireStoreListenerService.onStartCommand");
-
       //TODO: Crear una notificació i cridar startForeground (perquè el servei segeueix funcionant)
+        createForegroundNotification();
+      return START_NOT_STICKY;
+    }
+
+    private void createForegroundNotification() {
+        Intent intent =new Intent(this,MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,0);
         Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
                 .setContentTitle(String.format("Connectat a testroom"))
                 .setSmallIcon(R.drawable.ic_message)
+                .setContentIntent(pendingIntent)
                 .build();
-
         startForeground(1,notification);
-      return START_NOT_STICKY;
     }
 
     @Override
