@@ -75,7 +75,7 @@ public class UsersListActivity extends AppCompatActivity {
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            user_name = itemView.findViewById(R.id.user_name_view);
+            user_name = itemView.findViewById(R.id.user_name_view2);
         }
 
         public void bind(User item) {
@@ -133,7 +133,7 @@ public class UsersListActivity extends AppCompatActivity {
                 User new_user = new User(doc.getString("name"));
                 users.add(new_user);
             }
-            //adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
         }
     };
 
