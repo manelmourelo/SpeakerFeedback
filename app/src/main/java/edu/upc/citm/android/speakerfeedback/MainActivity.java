@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -255,6 +256,15 @@ public class MainActivity extends AppCompatActivity {
             case R.id.go_to_users:
                 Intent intent = new Intent(this, UsersListActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.close:
+                exitRoom();
+                db.collection("users").document(userId).delete();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    deleteSharedPreferences("config");
+                }
+                Intent intent2 = new Intent(this, RegisterUserActivity.class);
+                startActivityForResult(intent2, REGISTER_USER);
                 break;
         }
         return super.onOptionsItemSelected(item);

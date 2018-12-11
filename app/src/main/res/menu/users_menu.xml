@@ -7,4 +7,9 @@
         android:icon="@drawable/users"
         android:title="Item"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/close"
+        android:icon="@drawable/close"
+        android:title="Item"
+        app:showAsAction="always" />
 </menu>
