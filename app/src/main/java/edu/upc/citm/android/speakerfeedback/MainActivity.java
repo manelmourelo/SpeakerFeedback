@@ -24,12 +24,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,8 +62,6 @@ public class MainActivity extends AppCompatActivity {
         polls_view.setLayoutManager(new LinearLayoutManager(this));
         polls_view.setAdapter(adapter);
 
-        startFireStoreListenerService();
-
         // Busquem a les preferències de l'app l'ID de l'usuari per saber si ja s'havia registrat
         SharedPreferences prefs = getSharedPreferences("config", MODE_PRIVATE);
         userId = prefs.getString("userId", null);
@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Ja està registrat, mostrem el id al Log
             Log.i("SpeakerFeedback", "userId = " + userId);
+            enterRoom();
         }
 
     }
@@ -86,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
     private void stopFireStoreListenerService(){
         Intent intent = new Intent(this,FireStoreListenerService.class);
         stopService(intent);
-
     }
 
     private EventListener<DocumentSnapshot> roomListener = new EventListener<DocumentSnapshot>() {
@@ -198,9 +198,17 @@ public class MainActivity extends AppCompatActivity {
     private void enterRoom() {
         db.collection("users").document(userId)
                 .update(
-                        "room", "testroom"
+                        "room", "testroom",
+                        "last_active", new Date()
                 );
+        startFireStoreListenerService();
     }
+
+    private void exitRoom() {
+        db.collection("users").document(userId).update("room", FieldValue.delete());
+        stopFireStoreListenerService();
+    }
+
 
     public void onPollClicked(int pos){
 
