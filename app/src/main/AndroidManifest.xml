@@ -10,7 +10,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" android:launchMode="singleTask">
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,8 +20,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".RegisterUserActivity" />
-        <activity android:name=".UsersListActivity"></activity>
-        <service android:name=".FireStoreListenerService"/>
+        <activity android:name=".UsersListActivity" />
+
+        <service android:name=".FireStoreListenerService" />
+
+        <activity android:name=".RoomID"></activity>
     </application>
 
 </manifest>

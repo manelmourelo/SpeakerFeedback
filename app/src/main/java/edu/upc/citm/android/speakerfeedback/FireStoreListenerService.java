@@ -34,33 +34,37 @@ public class FireStoreListenerService extends Service {
       Log.i("SpeakerFeecback", "FireStoreListenerService.onStartCommand");
       //TODO: Crear una notificació i cridar startForeground (perquè el servei segeueix funcionant)
         if(!connected){
-            createForegroundNotification();
-            connected = true;
-            db.collection("rooms").document("testroom")
-                    .collection("polls").whereEqualTo("open", true)
-                    .addSnapshotListener(polls_listener);
+           String roomID = intent.getStringExtra("room");
+           if(!roomID.isEmpty())
+           {
+               db.collection("rooms").document(roomID).collection("polls").whereEqualTo("open",true).addSnapshotListener(polls_listener);
+               createForegroundNotification(roomID);
+               connected = true;
+           }
         }
 
       return START_NOT_STICKY;
     }
 
-    private void createForegroundNotification() {
+    private void createForegroundNotification(String room_id) {
         Intent intent =new Intent(this,MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,0);
+
         Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
-                .setContentTitle(String.format("Connectat a testroom"))
+                .setContentTitle(String.format("Connectat a" + room_id))
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1,notification);
+        connected = true;
     }
 
-    private void createForegroundNotificationNewQuestion(Poll poll) {
+    private void createForegroundNotificationNewQuestion(String room_id) {
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
-                .setContentTitle(String.format("New poll: <" + poll.getQuestion() + ">"))
+                .setContentTitle(String.format("Connectat a" + room_id))
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentIntent(pendingIntent)
                 .setVibrate(new long[] { 250, 250, 250, 250, 250 })
@@ -82,23 +86,36 @@ public class FireStoreListenerService extends Service {
         return null;
     }
 
-    private EventListener<QuerySnapshot> polls_listener = new EventListener<QuerySnapshot>() {
+    private EventListener<QuerySnapshot> polls_listener = new EventListener<QuerySnapshot>(){
         @Override
         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
             if (e != null) {
-                Log.e("SpeakerFeedback", "Error on recieve users inside a room", e);
+                Log.e("SpeakerFeedback", "Error al rebre polls", e);
                 return;
             }
 
             for (DocumentSnapshot doc : documentSnapshots)
             {
                 Poll poll = doc.toObject(Poll.class);
-                if(poll.isOpen()){
-                    Log.d("SpeakerFeedback", "New poll: " + poll.getQuestion());
-                    createForegroundNotificationNewQuestion(poll);
-                }
-            }
+                if(poll.isOpen())
+                {
+                    Log.d("SpeakerFeedback", poll.getQuestion());
 
+                    Intent intent = new Intent(FireStoreListenerService.this, MainActivity.class);
+                    PendingIntent pending_intent = PendingIntent.getActivity(FireStoreListenerService.this, 0, intent, 0);
+
+                    Notification notification = new NotificationCompat.Builder(FireStoreListenerService.this, App.CHANNEL_ID)
+                            .setContentTitle("New poll: " +String.format(poll.getQuestion()))
+                            .setSmallIcon(R.drawable.ic_message)
+                            .setContentIntent(pending_intent)
+                            .setVibrate(new long[] { 250, 250, 250, 250, 250 })
+                            .setAutoCancel(true)
+                            .build();
+
+                    startForeground(1, notification);
+                }
+
+            }
         }
     };
 

@@ -29,6 +29,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REGISTER_USER = 0;
+    private static final int INSERT_ROOM_ID =1;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView polls_view;
     private Adapter adapter;
     private TextView users_conected;
+    private String room_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,14 +77,19 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Ja està registrat, mostrem el id al Log
             Log.i("SpeakerFeedback", "userId = " + userId);
-            enterRoom();
+
         }
 
     }
 
+    private void SelectRoom() {
+        Intent intent = new Intent(this,RoomID.class);
+        startActivityForResult(intent, INSERT_ROOM_ID);
+    }
+
     private void startFireStoreListenerService(){
         Intent intent = new Intent(this,FireStoreListenerService.class);
-        intent.putExtra("room","testroom");
+        intent.putExtra("room","room_id");
         startService(intent);
     }
 
@@ -95,11 +103,20 @@ public class MainActivity extends AppCompatActivity {
         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
             if (e != null)
             {
-                Log.e("SpeakerFeedback", "error al rebre rooms/testroom", e);
+                Log.e("SpeakerFeedback", "error al rebre rooms", e);
                 return;
             }
-            String name = documentSnapshot.getString("name");
-            setTitle(name);
+            if(documentSnapshot.getBoolean("open") == false) {
+                stopFireStoreListenerService();
+                db.collection("users").document(userId).update(
+                        "room", FieldValue.delete());
+                SelectRoom();
+                finish();
+            }
+            else {
+                String name = documentSnapshot.getString("name");
+                setTitle(name);
+            }
         }
     };
 
@@ -143,13 +160,22 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    protected void onStart()
-    {
+    protected void onStart() {
+        if(room_id == null)
+            SelectRoom();
+        else {
+
+            db.collection("rooms").document(room_id)
+                    .addSnapshotListener(this, roomListener);
+
+            db.collection("users").whereEqualTo("room", room_id)
+                    .addSnapshotListener(this, usersListener);
+
+            db.collection("rooms").document(room_id).collection("polls")
+                    .orderBy("start", Query.Direction.DESCENDING)
+                    .addSnapshotListener(this, pollsListener);
+        }
         super.onStart();
-        // Posem un listener al room de la base de dades
-        db.collection("rooms").document("testroom").addSnapshotListener(this, roomListener);
-        db.collection("users").whereEqualTo("room", "testroom").addSnapshotListener(this, usersListener);
-        db.collection("rooms").document("testroom").collection("polls").addSnapshotListener(this, pollsListener);
     }
 
     @Override
@@ -163,6 +189,11 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, "Has de registrar un nom", Toast.LENGTH_SHORT).show();
                     finish();
                 }
+                break;
+            case INSERT_ROOM_ID:
+                room_id = data.getStringExtra("room_id");
+                startFireStoreListenerService();
+                enterRoom();
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
@@ -199,15 +230,16 @@ public class MainActivity extends AppCompatActivity {
     private void enterRoom() {
         db.collection("users").document(userId)
                 .update(
-                        "room", "testroom",
+                        "room", "room_id",
                         "last_active", new Date()
                 );
         startFireStoreListenerService();
     }
 
     private void exitRoom() {
-        db.collection("users").document(userId).update("room", FieldValue.delete());
         stopFireStoreListenerService();
+        db.collection("users").document(userId).update("room", FieldValue.delete());
+        SelectRoom();
     }
 
 
@@ -235,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
                 map.put("pollid", polls.get(0).getId());
                 map.put("option", which);
 
-                db.collection("rooms").document("testroom").collection("votes").document(userId).set(map);
+                db.collection("rooms").document("room_id").collection("votes").document(userId).set(map);
 
             }
         });
