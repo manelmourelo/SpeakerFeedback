@@ -42,7 +42,6 @@ public class FireStoreListenerService extends Service {
                connected = true;
            }
         }
-
       return START_NOT_STICKY;
     }
 
@@ -114,9 +113,7 @@ public class FireStoreListenerService extends Service {
 
                     startForeground(1, notification);
                 }
-
             }
         }
     };
-
 }

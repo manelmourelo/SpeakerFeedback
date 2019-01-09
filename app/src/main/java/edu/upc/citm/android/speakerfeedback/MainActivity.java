@@ -77,9 +77,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Ja està registrat, mostrem el id al Log
             Log.i("SpeakerFeedback", "userId = " + userId);
-
         }
-
     }
 
     private void SelectRoom() {
@@ -129,16 +127,6 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             users_conected.setText(String.format("Num. Users : %d", documentSnapshots.size()));
-            //String nomUsuari = Integer.toString(documentSnapshots.size());
-            // Això és per pillar tots els noms que hi ha a la base de dades dins de room
-           // for (DocumentSnapshot doc : documentSnapshots)
-           // {
-            //   nomUsuari += doc.getString("name") + "\n";
-           // }
-            //users_conected.setText(nomUsuari);
-
-
-
         }
     };
 
@@ -161,11 +149,10 @@ public class MainActivity extends AppCompatActivity {
     };
 
     protected void onStart() {
-        if(room_id == null)
-            SelectRoom();
-        else {
 
-            db.collection("rooms").document(room_id)
+
+        if(room_id != null){
+               db.collection("rooms").document(room_id)
                     .addSnapshotListener(this, roomListener);
 
             db.collection("users").whereEqualTo("room", room_id)
@@ -185,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     String name = data.getStringExtra("name");
                     registerUser(name);
+                    SelectRoom();
                 } else {
                     Toast.makeText(this, "Has de registrar un nom", Toast.LENGTH_SHORT).show();
                     finish();
@@ -206,8 +194,6 @@ public class MainActivity extends AppCompatActivity {
         db.collection("users").add(fields).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
-                // Toast.makeText(MainActivity.this, "Success!", Toast.LENGTH_SHORT).show();
-                // textview.setText(documentReference.getId());
                 userId = documentReference.getId();
                 SharedPreferences prefs = getSharedPreferences("config", MODE_PRIVATE);
                 prefs.edit()
@@ -246,7 +232,6 @@ public class MainActivity extends AppCompatActivity {
     public void onPollClicked(int pos){
 
         Poll poll = polls.get(pos);
-
         if(!poll.isOpen()){
             return;
         }
@@ -262,11 +247,10 @@ public class MainActivity extends AppCompatActivity {
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Map<String, Object> map = new HashMap<String, Object>();
 
+                Map<String, Object> map = new HashMap<String, Object>();
                 map.put("pollid", polls.get(0).getId());
                 map.put("option", which);
-
                 db.collection("rooms").document("room_id").collection("votes").document(userId).set(map);
 
             }
@@ -366,14 +350,9 @@ public class MainActivity extends AppCompatActivity {
             holder.questions_view.setText(poll.getQuestion());
             holder.options_view.setText(poll.getOptionsAsString());
         }
-
         @Override
         public int getItemCount() {
             return polls.size();
         }
-
-
-
     }
-
 }

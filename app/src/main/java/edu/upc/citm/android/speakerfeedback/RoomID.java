@@ -98,7 +98,6 @@ public class RoomID extends AppCompatActivity {
                 }
                 else
                     Toast.makeText(RoomID.this, "Password incorrect!", Toast.LENGTH_SHORT).show();
-
             }
         });
 
@@ -108,7 +107,6 @@ public class RoomID extends AppCompatActivity {
                 dialog.cancel();
             }
         });
-
         builder.show();
     }
 }

@@ -30,9 +30,7 @@ public class UsersListActivity extends AppCompatActivity {
 
     private RecyclerView users_list_view;
     private Adapter adapter;
-
     public List<User> users;
-
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
@@ -77,11 +75,9 @@ public class UsersListActivity extends AppCompatActivity {
             super(itemView);
             user_name = itemView.findViewById(R.id.user_name_view2);
         }
-
         public void bind(User item) {
             user_name.setText(item.getName());
         }
-
     }
 
     class Adapter extends RecyclerView.Adapter<ViewHolder> {
