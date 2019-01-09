@@ -98,14 +98,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("SpeakerFeedback", "error al rebre rooms/testroom", e);
                 return;
             }
-           if(documentSnapshot.getBoolean("open")==false){
-                stopFireStoreListenerService();
-                finish();
-           }
-           else {
-               String name = documentSnapshot.getString("name");
-               setTitle(name);
-           }
+            String name = documentSnapshot.getString("name");
+            setTitle(name);
         }
     };
 
